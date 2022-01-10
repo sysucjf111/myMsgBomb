@@ -1,12 +1,14 @@
 package com.jt;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -21,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class HttpClientTest {
+public class HttpClientTest {//写
     /**
      * 要求：java代码内部，获取百度的页面
      * 实现步骤：
@@ -62,7 +64,9 @@ public class HttpClientTest {
             CloseableHttpClient httpClient= HttpClients.createDefault();
             /*循环测试*/
             //创建请求类型
-            HttpGet httpGet=new HttpGet(url+i);
+            String sendUrl = url + i;
+            System.out.println(sendUrl);
+            HttpGet httpGet=new HttpGet(sendUrl);
             //发起http请求
             HttpResponse httpResponse=httpClient.execute(httpGet);
             //判断状态码是否为200
@@ -123,28 +127,30 @@ public class HttpClientTest {
 
     @Test
     public void httpClientTest5() throws IOException {//报500，不知道为什么
+
+
         JSONObject json = new JSONObject();
         json.put("mobile", "13660021070");
         System.out.println(json);
-        Map<String, String> data = new HashMap<>();
-        data.put("mobile", "13660021070");
+//        Map<String, String> data = new HashMap<>();
+//        data.put("mobile", "13660021070");
 
-        StringBuilder sb = new StringBuilder();
-        for(Map.Entry<String, String> entry : data.entrySet()){
-            sb.append(entry.getKey()).append("=")
-                    .append(entry.getValue()).append("\n");
-        }
+//        StringBuilder sb = new StringBuilder();
+//        for(Map.Entry<String, String> entry : data.entrySet()){
+//            sb.append(entry.getKey()).append("=")
+//                    .append(entry.getValue()).append("\n");
+//        }
 
         String url = "https://www.hunterplus.net/api/code/send";
         //创建httpclient客户端对象
         CloseableHttpClient httpClient = HttpClients.createDefault();
         //创建请求类型
         HttpPost httpPost=new HttpPost(url);
+        httpPost.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36");
 
-
-//        StringEntity entity = new StringEntity(json.toString(), "UTF-8");
-        System.out.println(sb.toString());
-        StringEntity entity = new StringEntity(sb.toString(),"UTF-8");
+        StringEntity entity = new StringEntity(json.toString(), "UTF-8");
+//        System.out.println(sb.toString());
+//        StringEntity entity = new StringEntity(sb.toString(),"UTF-8");
         httpPost.setEntity(entity);
         //得到response
         CloseableHttpResponse response = httpClient.execute(httpPost);
@@ -152,6 +158,8 @@ public class HttpClientTest {
         System.out.println("--------------------------------------");
         System.out.println("Response content: " + EntityUtils.toString(responseEntity, "UTF-8"));
         System.out.println("--------------------------------------");
+        response.close();
+        httpClient.close();
 
     }
 
